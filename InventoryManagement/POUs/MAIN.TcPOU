@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{c2a0738b-ac83-456b-9a72-c260f227bcfd}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	fbShelf 	: FB_ShelfManager;
+	fbRobot 		: FB_Robot;
+
+    step : INT := 0;
+
+    partID1 : STRING(23) := 'PART1_0000000000000000';
+    partID2 : STRING(23) := 'PART2_0000000000000000';
+    partID3 : STRING(23) := 'PART3_0000000000000000';
+
+    pos     : INT;
+    ok      : BOOL;
+    outID   : STRING(23);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE step OF
+
+    0:  
+        fbShelf.LoadNextFreeSpace(
+            PartID   := partID1,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        IF ok THEN step := 1; END_IF
+
+    1:  
+        fbShelf.LoadNextFreeSpace(
+            PartID   := partID2,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        IF ok THEN step := 2; END_IF
+
+    2:  
+        fbShelf.LoadNextFreeSpace(
+            PartID   := partID3,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        IF ok THEN step := 3; END_IF
+
+    3:  
+        fbShelf.GetNextOccupiedSpace(
+            Pos      => pos,
+            bSuccessful => ok
+        ); 
+        step := 4;
+
+    4:  
+        fbShelf.UnloadNextOccupiedSpace(
+            PartID   => outID,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        step := 5;
+
+    5:  
+        fbShelf.UnloadByPartID(
+            PartID   := partID2,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        step := 6;
+
+    6: 
+        fbShelf.UnloadNextOccupiedSpace(
+            PartID   => outID,
+            Pos      => pos,
+            bSuccessful => ok
+        );
+        step := 100;
+
+    100:
+        step := 100;
+
+END_CASE
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

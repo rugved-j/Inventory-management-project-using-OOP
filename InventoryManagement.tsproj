@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.19">
+	<Project ProjectGUID="{C1C4655B-6EB7-93B9-3C81-6650F7E94171}" Target64Bit="true" ShowHideConfigurations="#x6">
+		<System>
+			<Tasks>
+				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Plc>
+			<Project GUID="{C0DB4ADB-DFD0-4BE1-A66A-8562DC4BFB23}" Name="InventoryManagement" PrjFilePath="InventoryManagement\InventoryManagement.plcproj" TmcFilePath="InventoryManagement\InventoryManagement.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{3FF57ED1-4A2B-9A1A-C77D-0D8CC29B3A99}">
+					<Name>InventoryManagement Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Contexts>
+						<Context>
+							<Id>0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010030</OTCID>
+							</ManualConfig>
+							<Priority>20</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="20" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+		</Plc>
+		<Analytics ConfigVersion="1.4">
+			<Name>ANALYTICS</Name>
+			<ImageId>437</ImageId>
+			<XmlProps><![CDATA[<Address>Hauptstraße 5, 32567 Berlin</Address><Latitude>123.41</Latitude><Longitude>43.4555</Longitude><SystemIdAlias /><DeviceProps></DeviceProps><SelectedDriverVersion>3.3.211.0</SelectedDriverVersion><StreamTargets><StreamTargetItem Id="ed8565d8-f7dd-480d-be16-88e8d6c682f0"><Name>Stream Target 1</Name><Type>FILE</Type><Directory>%TC_BOOTPRJPATH%</Directory><MqttConnectionSettings><Broker>127.0.0.1</Broker><BrokerPort>1883</BrokerPort><UserID /><WithCertificates>false</WithCertificates><CA_Certificate /><Cert_Certificate /><Key_Certificate /><CommunicationTimeout>30000000</CommunicationTimeout><KeepAlivePeriod>600000000</KeepAlivePeriod><TcpBufferSize>32768</TcpBufferSize><SecurityType>NO_SECURITY</SecurityType><Insecure>false</Insecure><IgnoreExpiration>false</IgnoreExpiration><IsPskIdCaseSensitive>false</IsPskIdCaseSensitive><IgnoreCnMismatch>false</IgnoreCnMismatch><TargetPaths>false</TargetPaths><PskMode>HexKey</PskMode></MqttConnectionSettings><TimeType>None</TimeType></StreamTargetItem></StreamTargets><ActivateAlyLogger>false</ActivateAlyLogger>]]></XmlProps>
+		</Analytics>
+	</Project>
+</TcSmProject>

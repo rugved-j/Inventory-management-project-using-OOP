@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Robot" Id="{a79f1f14-16d8-4a79-8052-645c6bcb43c2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Robot
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	fbShelfManager	: REFERENCE TO FB_ShelfManager;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="LoadPart" Id="{0f4e329d-c814-4698-bc98-e559fa76ca18}">
+      <Declaration><![CDATA[METHOD LoadPart : BOOL
+VAR_INPUT
+	PartID : STRING(23);
+END_VAR
+VAR_OUTPUT
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UnloadPart" Id="{0d56c451-eed5-4720-b9ef-b60923181bfe}">
+      <Declaration><![CDATA[METHOD UnloadPart : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	PartID 			: STRING(23);	
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

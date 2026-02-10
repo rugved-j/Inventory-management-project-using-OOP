@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Space" Id="{7525ade0-a898-4674-8c67-32f602dcdcda}">
+    <Declaration><![CDATA[TYPE ST_Space :
+STRUCT
+	bIsOccupied		: BOOL;
+	sPartID			: STRING(23);
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

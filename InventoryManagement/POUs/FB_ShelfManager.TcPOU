@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ShelfManager" Id="{57e5f9fd-c66e-4419-87b0-e9ac8e310266}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ShelfManager
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	aSpaces		: ARRAY [1..42] OF ST_Space;
+	oQueueLogic : FB_QueueLogic;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="GetNextFreeSpace" Id="{36ae8c7f-0025-48b2-b833-3487145a5f25}">
+      <Declaration><![CDATA[METHOD GetNextFreeSpace : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+    i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 1 TO 42 DO
+    IF NOT aSpaces[i].bIsOccupied THEN
+        Pos := i;
+        bSuccessful := TRUE;
+        RETURN;
+    END_IF
+END_FOR
+
+Pos := 0;
+bSuccessful := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetNextOccupiedSpace" Id="{2fb91419-c3db-43c5-ba19-993f90717e4d}">
+      <Declaration><![CDATA[METHOD GetNextOccupiedSpace : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[oQueueLogic.CurrentPointerPosition(iIndex => Pos,bSuccessful => bSuccessful);
+
+IF NOT bSuccessful THEN
+    Pos := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetSpaceByPartID" Id="{ee7fb86d-53d9-423d-949b-308c0124b420}">
+      <Declaration><![CDATA[METHOD GetSpaceByPartID : BOOL
+VAR_INPUT
+	PartID			: STRING(23);
+END_VAR
+VAR_OUTPUT
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LoadByExplicitPosition" Id="{1de4f831-31cc-4614-b9a4-12a75bfb20d6}">
+      <Declaration><![CDATA[METHOD LoadByExplicitPosition 
+VAR_INPUT
+	PartID : STRING(23);
+	Pos : INT;
+END_VAR
+VAR_OUTPUT
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+    bRemoved : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF (Pos < 1) OR (Pos > 42) THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+
+IF aSpaces[Pos].bIsOccupied THEN
+    oQueueLogic.RemoveByIndex(
+        iIndex      := Pos,
+        bSuccessful => bRemoved
+    );
+	IF NOT bRemoved THEN
+		bSuccessful := FALSE;
+        RETURN;
+	END_IF
+END_IF
+
+aSpaces[Pos].bIsOccupied := TRUE;
+aSpaces[Pos].sPartID := PartID;
+
+oQueueLogic.Push(Pos);
+
+bSuccessful := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LoadNextFreeSpace" Id="{64279725-eaaf-4d63-9322-1abeb7578b1c}">
+      <Declaration><![CDATA[METHOD LoadNextFreeSpace
+VAR_INPUT
+	PartID : STRING(23);
+END_VAR
+VAR_OUTPUT
+    Pos : INT;
+    bSuccessful : BOOL;
+END_VAR
+VAR
+    i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 1 TO 42 DO
+    IF NOT aSpaces[i].bIsOccupied THEN
+
+        aSpaces[i].bIsOccupied := TRUE;
+        aSpaces[i].sPartID := PartID;
+
+        oQueueLogic.Push(i);
+
+        Pos := i;
+        bSuccessful := TRUE;
+        RETURN;
+    END_IF
+END_FOR
+
+Pos := 0;
+bSuccessful := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UnloadByExplicitPosition" Id="{79718530-f921-43a0-9a32-5543cc722a31}">
+      <Declaration><![CDATA[METHOD UnloadByExplicitPosition : BOOL
+VAR_INPUT
+	Pos : INT;
+END_VAR
+VAR_OUTPUT
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+    bRemoved : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF (Pos < 1) OR (Pos > 42) THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+
+IF NOT aSpaces[Pos].bIsOccupied THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+oQueueLogic.RemoveByIndex(
+    iIndex      := Pos,
+    bSuccessful => bRemoved
+);
+
+IF NOT bRemoved THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+
+aSpaces[Pos].bIsOccupied := FALSE;
+aSpaces[Pos].sPartID := '';
+
+bSuccessful := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UnloadByPartID" Id="{92cad8fe-9738-4caa-aee5-3a9211c94be6}">
+      <Declaration><![CDATA[METHOD UnloadByPartID : BOOL
+VAR_INPUT
+	PartID			: STRING(23);
+END_VAR
+VAR_OUTPUT
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+    i : INT;
+    bRemoved : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 1 TO 42 DO
+    IF aSpaces[i].bIsOccupied AND (aSpaces[i].sPartID = PartID) THEN
+
+        aSpaces[i].bIsOccupied := FALSE;
+        aSpaces[i].sPartID := '';
+
+        oQueueLogic.RemoveByIndex(i, bSuccessful => bRemoved);
+
+        Pos := i;
+        bSuccessful := TRUE;
+        RETURN;
+    END_IF
+END_FOR
+
+Pos := 0;
+bSuccessful := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UnloadNextOccupiedSpace" Id="{fa5aeca6-9c6e-4b4f-829a-e80139b5fe37}">
+      <Declaration><![CDATA[METHOD UnloadNextOccupiedSpace 
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	PartID			: STRING(23);
+	Pos 			: INT;
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+    iPos : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[oQueueLogic.Pop(iIndex => iPos, bSuccessful => bSuccessful);
+
+IF NOT bSuccessful THEN
+    Pos := 0;
+    PartID := '';
+    RETURN;
+END_IF
+
+PartID := aSpaces[iPos].sPartID;
+aSpaces[iPos].bIsOccupied := FALSE;
+aSpaces[iPos].sPartID := '';
+
+Pos := iPos;
+bSuccessful := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_QueueLogic" Id="{02e94496-6c6a-4bdc-9412-b62552d5e969}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_QueueLogic
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	aQueue			: ARRAY [1..42] OF INT;
+	iStartPointer	: INT;
+	iEndPointer		: INT;
+	nCounter		: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CurrentPointerPosition" Id="{d4697696-40fc-400b-9c40-6fd35ab15cf5}">
+      <Declaration><![CDATA[METHOD CurrentPointerPosition : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	iIndex		: INT;
+	bSuccessful	: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF nCounter = 0 THEN
+    bSuccessful := FALSE;
+    iIndex := 0;
+    RETURN;
+END_IF
+
+
+iIndex := aQueue[iStartPointer];
+bSuccessful := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsEmpty" Id="{9e7662c9-d6c6-4635-9cfb-710628244c93}">
+      <Declaration><![CDATA[METHOD IsEmpty : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	bEmpty		: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bEmpty := nCounter = 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsFull" Id="{f44baa79-94fb-437a-b4e9-286c718a0990}">
+      <Declaration><![CDATA[METHOD IsFull : BOOL
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	bFull		: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bFull := nCounter >= 42;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Pop" Id="{5fb967a8-84b3-44d0-8cc8-da66a06dd09f}">
+      <Declaration><![CDATA[METHOD Pop : BOOL
+VAR_INPUT
+	
+END_VAR
+VAR_OUTPUT
+	iIndex	: INT;
+	bSuccessful		: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF nCounter = 0 THEN
+    bSuccessful := FALSE;
+    iIndex := 0;
+    RETURN;
+END_IF
+
+iIndex := aQueue[iStartPointer];
+nCounter := nCounter - 1;
+
+IF nCounter = 0 THEN   
+    iStartPointer := 0;
+    iEndPointer   := 0;
+ELSE
+    iStartPointer := iStartPointer + 1;
+    IF iStartPointer > 42 THEN
+        iStartPointer := 1;
+    END_IF
+END_IF
+
+bSuccessful := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Push" Id="{79a2e02a-ec80-4c3a-ba4b-a00cf859a1fa}">
+      <Declaration><![CDATA[METHOD Push : BOOL
+VAR_INPUT
+	iIndex	: INT;
+END_VAR
+VAR_OUTPUT
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+// 	i		: INT := 1;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Adding the part in the Queue, increasing the nCounter and updating the Queue's Index
+
+IF nCounter >= 42 THEN
+	bSuccessful := FALSE;
+	RETURN;
+END_IF
+IF nCounter = 0 THEN
+	iStartPointer 		:= 1;
+	iEndPointer   		:= 1;
+ELSE
+	iEndPointer := iEndPointer + 1;
+	IF iEndPointer > 42 THEN
+		iEndPointer := 1; 
+	END_IF
+END_IF
+aQueue[iEndPointer] := iIndex;
+	
+nCounter	:=nCounter+1;
+bSuccessful := TRUE;	
+
+RETURN;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RemoveByIndex" Id="{e3b0a6b4-dca1-4e54-b3ee-9d2833008056}">
+      <Declaration><![CDATA[METHOD RemoveByIndex : BOOL
+VAR_INPUT
+	iIndex	: INT;
+END_VAR
+VAR_OUTPUT
+	bSuccessful		: BOOL;
+END_VAR
+VAR
+	i,j,iPos		: INT;
+	bFound	: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF nCounter = 0 THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+
+iPos := iStartPointer;
+bFound := FALSE;
+
+FOR i := 1 TO nCounter DO
+    IF aQueue[iPos] = iIndex THEN
+        bFound := TRUE;
+        EXIT;
+    END_IF
+
+    iPos := iPos + 1;
+    IF iPos > 42 THEN
+        iPos := 1;
+    END_IF
+END_FOR
+
+IF NOT bFound THEN
+    bSuccessful := FALSE;
+    RETURN;
+END_IF
+
+
+j := iPos;
+WHILE j <> iEndPointer DO
+    IF j = 42 THEN
+        aQueue[j] := aQueue[1];
+        j := 1;
+    ELSE
+        aQueue[j] := aQueue[j + 1];
+        j := j + 1;
+    END_IF
+END_WHILE
+
+
+IF iEndPointer = 1 THEN
+    iEndPointer := 42;
+ELSE
+    iEndPointer := iEndPointer - 1;
+END_IF
+
+nCounter := nCounter - 1;
+
+(* Queue became empty *)
+IF nCounter = 0 THEN
+    iStartPointer := 0;
+    iEndPointer := 0;
+END_IF
+
+bSuccessful := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
